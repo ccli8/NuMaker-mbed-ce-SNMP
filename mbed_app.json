@@ -20,6 +20,13 @@
             "lwip.debug-enabled"                        : true,
             "lwip.use-mbed-trace"                       : true
         },
+        "NUMAKER_M467SJ": {
+            "target.network-default-interface-type" : "ETHERNET",
+            "gpio-perif-button1"                    : "BUTTON1",
+            "gpio-perif-button2"                    : "BUTTON2",
+            "gpio-perif-led1"                       : "LED1",
+            "gpio-perif-led2"                       : "LED2"
+        },
         "NUMAKER_IOT_M467": {
             "target.network-default-interface-type" : "ETHERNET",
             "nsapi.default-wifi-security"           : "WPA_WPA2",
@@ -31,6 +38,14 @@
             "esp8266.cts"                           : "PC_2",
             "esp8266.rst"                           : "PC_4",
             "esp8266.provide-default"               : true,
+            "gpio-perif-button1"                    : "BUTTON1",
+            "gpio-perif-button2"                    : "BUTTON2",
+            "gpio-perif-led1"                       : "LED1",
+            "gpio-perif-led2"                       : "LED2"
+        },
+        "NUMAKER_M483KG": {
+            "target.network-default-interface-type" : "ETHERNET",
+            "target.macros_add"                     : ["MBEDTLS_ENTROPY_HARDWARE_ALT"],
             "gpio-perif-button1"                    : "BUTTON1",
             "gpio-perif-button2"                    : "BUTTON2",
             "gpio-perif-led1"                       : "LED1",
