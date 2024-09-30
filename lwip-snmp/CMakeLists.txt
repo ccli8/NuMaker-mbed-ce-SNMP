@@ -10,6 +10,9 @@ target_include_directories(lwip-snmp
         lwip/src/include/lwip/apps
 )
 
+# NOTE: Ignore below
+# lwip/src/apps/snmp/snmp_netconn.c
+# lwip/src/apps/snmp/snmp_raw.c
 target_sources(lwip-snmp
     INTERFACE
         lwip/src/apps/snmp/snmp_asn1.c
