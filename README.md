@@ -19,7 +19,7 @@ For example, the MIB module MIB-2 ([RFC1213](https://datatracker.ietf.org/doc/ht
 This example shows lwIP provided SNMP Agent running on Nuvoton's Mbed Enabled boards.
 It relies on the following software modules:
 
--   [Mbed OS](https://github.com/ARMmbed/mbed-os):
+-   [Mbed OS Community Edition](https://github.com/mbed-ce/mbed-os):
     Is an open source embedded operating system designed specifically for the "things" in the Internet of Things.
 -   [Lightweight TCP/IP stack](https://savannah.nongnu.org/projects/lwip/):
     Is a small independent implementation of the TCP/IP protocol suite.
@@ -48,11 +48,11 @@ For demostration, the example involves two MIB modules:
 
 ## Support targets
 
-Platform                                                                    |  Connectivity       
-----------------------------------------------------------------------------|-------------------
-[NuMaker-IoT-M467](https://os.mbed.com/platforms/NUMAKER-IOT-M467/)         | Wi-Fi ESP8266     
-[NuMaker-PFM-M487](https://developer.mbed.org/platforms/NUMAKER-PFM-M487/)  | Ethernet          
-[NuMaker-IoT-M487](https://os.mbed.com/platforms/NUMAKER-IOT-M487/)         | Wi-Fi ESP8266     
+Platform                                                                                          |  Connectivity       
+--------------------------------------------------------------------------------------------------|-------------------
+[NuMaker-IoT-M467](https://www.nuvoton.com/board/numaker-iot-m467/)                               | Wi-Fi ESP8266     
+[NuMaker-PFM-M487](https://www.nuvoton.com/products/iot-solution/iot-platform/numaker-pfm-m487/)  | Ethernet          
+[NuMaker-IoT-M487](https://www.nuvoton.com/products/iot-solution/iot-platform/numaker-iot-m487/)  | Wi-Fi ESP8266     
 
 > **_NOTE:_** For network interface, Etherent is mandatory. Non-Ethernet is for experimental.
 
@@ -60,25 +60,36 @@ Platform                                                                    |  C
 
 ## Support development tools
 
+Use cmake-based build system.
+Check out [hello world example](https://github.com/mbed-ce/mbed-ce-hello-world) for getting started.
+
+> **_NOTE:_** Legacy development tools below are not supported anymore.
 -   [Arm's Mbed Studio](https://os.mbed.com/docs/mbed-os/v6.15/build-tools/mbed-studio.html)
 -   [Arm's Mbed CLI 2](https://os.mbed.com/docs/mbed-os/v6.15/build-tools/mbed-cli-2.html)
 -   [Arm's Mbed CLI 1](https://os.mbed.com/docs/mbed-os/v6.15/tools/developing-mbed-cli.html)
 
+For [VS Code development](https://github.com/mbed-ce/mbed-os/wiki/Project-Setup:-VS-Code)
+or [OpenOCD as upload method](https://github.com/mbed-ce/mbed-os/wiki/Upload-Methods#openocd),
+install below additionally:
+
+-   [NuEclipse](https://github.com/OpenNuvoton/Nuvoton_Tools#numicro-software-development-tools): Nuvoton's fork of Eclipse
+-   Nuvoton forked OpenOCD: Shipped with NuEclipse installation package above.
+    Checking openocd version `openocd --version`, it should fix to `0.10.022`.
+
 ## Developer guide
 
-This section is intended for developers to get started, import the example application, compile with Mbed CLI 1, and get it running as SNMP Agent on target board.
+This section is intended for developers to get started, import the example application, build, and get it running as SNMP Agent on target board.
 
-In the following, we take NuMaker-PFM-M487 as example board to show this example.
+In the following, we take NuMaker-IoT-M467 as example board to show this example.
 
 ### Hardware requirements
 
--   [NuMaker-PFM-M487](https://developer.mbed.org/platforms/NUMAKER-PFM-M487/)
+-   NuMaker-IoT-M467 board
 -   Host OS: Windows or others
 -   Ethernet cable (RJ45)
 
 ### Software requirements
 
--   [Arm's Mbed CLI 1](https://os.mbed.com/docs/mbed-os/v6.15/tools/developing-mbed-cli.html)
 -   [SNMPSoft Tools](https://ezfive.com/snmpsoft-tools/) or equivalent
 
     > **_NOTE:_** SNMPSoft Tools runs on Windows. It is fine to replace with another SNMP test tool running on another host OS say Linux or Mac OS as long as the alternative can issue equivalent SNMP test command later.
@@ -88,49 +99,60 @@ In the following, we take NuMaker-PFM-M487 as example board to show this example
 ### Hardware setup
 
 -   Switch target board
-
-    NuMaker-PFM-M487's Nu-Link: TX/RX/VCOM to ON, MSG to also ON
-
+    -   NuMaker-IoT-M467's Nu-Link2: TX/RX/VCOM to ON, MSG to non-ON
 -   Connect target board to host through USB
-
-    You should see Mbed USB drive shows up in File Browser.
-
+    -   NuMaker-IoT-M467: Mbed USB drive shows up in File Browser
 -   Connect target board to LAN through Ethernet cable
 
 ### Network setup
 
 Dependent on your network environment, connect host and target board to the same [LAN](https://en.wikipedia.org/wiki/Local_area_network).
 
-### Compile with Mbed CLI 1
+### Build the example
 
 1.  Clone the example and navigate into it
     ```
-    $ git clone https://github.com/OpenNuvoton/NuMaker-mbed-SNMP
-    $ cd NuMaker-mbed-SNMP
+    $ git clone https://github.com/mbed-nuvoton/NuMaker-mbed-ce-SNMP
+    $ cd NuMaker-mbed-ce-SNMP
+    $ git checkout -f master
     ```
+
 1.  Deploy necessary libraries
     ```
-    $ mbed deploy
+    $ git submodule update --init
     ```
-1.  Configure network interface
+    Or for fast install:
+    ```
+    $ git submodule update --init --filter=blob:none
+    ```
+
+1.  Configure enabling SNMPv3 or not
+    In `mbed_app.json`, SNMPv3 is not enabled by default.
+    ```json5
+        "lwip-snmpv3": false,
+    ```
+    > **_NOTE:_** SNMPv3 is only experimental in lwIP. NOT RECOMMEND enabling it.
+
+1.  Configure network interface.
     In `mbed_app.json`, the network interface has been Ethernet. No need for further configuration.
-    ```json
-        "target.network-default-interface-type" : "ETHERNET",
+    ```json5
+        "target.network-default-interface-type": "ETHERNET",
     ```
 
 1.  In `app_snmp/config/snmp_agent_config.h`, change the SNMP defines to meet your requirement.
     For development, you could just leave them unchanged.
 
-1.  Build the example on **ARM** toolchain
+1.  Compile with cmake/ninja
     ```
-    $ mbed compile -m NUMAKER_PFM_M487 -t ARM
+    $ mkdir build; cd build
+    $ cmake .. -GNinja -DCMAKE_BUILD_TYPE=Develop -DMBED_TARGET=NUMAKER_IOT_M467
+    $ ninja
+    $ cd ..
     ```
 
 ### Flash the image
 
-Just drag-n-drop `NuMaker-mbed-SNMP.bin` onto NuMaker-PFM-M487 board.
-
-> **_NOTE:_** The operation above requires NuMaker-PFM-M487 board's Nu-Link swiched to **MASS** mode (MSG to ON).
+Just drag-n-drop `NuMaker-mbed-ce-SNMP.bin` or `NuMaker-mbed-ce-SNMP.hex` onto NuMaker-IoT-M467 board.
 
 ### Verify SNMP communication
 
@@ -199,9 +221,9 @@ Type=OctetString
 Value=
 </pre>
 
-Write to a different value say M487 of string type (-tp:str):
+Write to a different value say M467 of string type (-tp:str):
 <pre>
-$ SnmpSet.exe -r:<b>${target-board-IP}</b> -v:2c -c:"private" -o:.1.3.6.1.2.1.1.5.0 -val:M487 -tp:str
+$ SnmpSet.exe -r:<b>${target-board-IP}</b> -v:2c -c:"private" -o:.1.3.6.1.2.1.1.5.0 -val:M467 -tp:str
 
 OK
 </pre>
@@ -212,7 +234,7 @@ $ SnmpGet.exe -r:<b>${target-board-IP}</b> -v:2c -c:"public" -o:.1.3.6.1.2.1.1.5
 
 OID=.1.3.6.1.2.1.1.5.0
 Type=OctetString
-Value=M487
+Value=M467
 </pre>
 
 **_Example:_** Traverse mib-2.system group (delimited by -os and -op)
@@ -224,7 +246,7 @@ OID=.1.3.6.1.2.1.1.1.0, Type=OctetString, Value=SNMP Agent on Nuvoton Mbed platf
 OID=.1.3.6.1.2.1.1.2.0, Type=OID, Value=1.3.6.1.4.1.26381
 OID=.1.3.6.1.2.1.1.3.0, Type=TimeTicks, Value=0:10:44.61
 OID=.1.3.6.1.2.1.1.4.0, Type=OctetString, Value=foo@example.com
-OID=.1.3.6.1.2.1.1.5.0, Type=OctetString, Value=M487
+OID=.1.3.6.1.2.1.1.5.0, Type=OctetString, Value=M467
 OID=.1.3.6.1.2.1.1.6.0, Type=OctetString, Value=
 OID=.1.3.6.1.2.1.1.7.0, Type=Integer, Value=72
 Total: 7
@@ -277,7 +299,7 @@ Total: 30
 **_Example:_** Generate trap by write to mib-2.system.sysName with invalid community name
 
 <pre>
-$ SnmpSet.exe -r:<b>${target-board-IP}</b> -v:2c -c:"invalid_community" -o:.1.3.6.1.2.1.1.5.0 -val:M487 -tp:str
+$ SnmpSet.exe -r:<b>${target-board-IP}</b> -v:2c -c:"invalid_community" -o:.1.3.6.1.2.1.1.5.0 -val:M467 -tp:str
 
 %Failed to set value to SNMP variable. Timeout.
 </pre>
@@ -353,7 +375,7 @@ Based on lwIP SNMP code, the main SNMP Agent application code on Mbed OS is plac
 
     > **_NOTE:_** Configurations with GPIO pin names of buttons/leds are defined in `mbed_app.json`.
 
-    ```json
+    ```json5
     "config": {
         "gpio-perif-button1": {
             "help"      : "PinName for button1, used for SNMP private GPIO peripheral MIB"
