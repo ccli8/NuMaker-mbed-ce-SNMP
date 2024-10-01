@@ -21,7 +21,7 @@
             "lwip.use-mbed-trace"                       : true
         },
         "NUMAKER_IOT_M467": {
-            "target.network-default-interface-type" : "WIFI",
+            "target.network-default-interface-type" : "ETHERNET",
             "nsapi.default-wifi-security"           : "WPA_WPA2",
             "nsapi.default-wifi-ssid"               : "\"SSID\"",
             "nsapi.default-wifi-password"           : "\"PASSWORD\"",
@@ -45,7 +45,7 @@
             "gpio-perif-led2"                       : "LED2"
         },
         "NUMAKER_IOT_M487": {
-            "target.network-default-interface-type" : "WIFI",
+            "target.network-default-interface-type" : "ETHERNET",
             "nsapi.default-wifi-security"           : "WPA_WPA2",
             "nsapi.default-wifi-ssid"               : "\"SSID\"",
             "nsapi.default-wifi-password"           : "\"PASSWORD\"",
